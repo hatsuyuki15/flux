@@ -1,3 +1,11 @@
+FROM golang:1.13.5 AS builder
+
+WORKDIR /workspace
+
+RUN git clone https://github.com/hatsuyuki15/tplgen.git . && git checkout a0c2dc0e841ba3bdaeeebe0fd1109aedd0d3f23f
+RUN CGO_ENABLED=0 GOOS=linux go build -a -o app
+
+
 FROM alpine:3.12
 
 WORKDIR /home/flux
@@ -49,6 +57,11 @@ ENV PATH=/bin:/sbin:/usr/bin:/usr/local/bin:/usr/lib/kubeyaml
 RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
 COPY ./kubeconfig /root/.kube/config
 COPY ./fluxd /usr/local/bin/
+
+# Get the tplgen binary
+RUN wget -O /usr/bin/ytt https://github.com/k14s/ytt/releases/download/v0.26.0/ytt-linux-amd64 \
+     && chmod +x /usr/bin/ytt
+COPY --from=builder /workspace/app /usr/bin/tplgen
 
 ARG BUILD_DATE
 ARG VCS_REF
