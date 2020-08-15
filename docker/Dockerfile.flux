@@ -2,7 +2,7 @@ FROM golang:1.13.5 AS builder
 
 WORKDIR /workspace
 
-RUN git clone https://github.com/hatsuyuki15/tplgen.git . && git checkout a0c2dc0e841ba3bdaeeebe0fd1109aedd0d3f23f
+RUN git clone https://github.com/hatsuyuki15/tplgen.git . && git checkout 43a42b8e7226b17daf33f85a0f19ad43adb294ce
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o app
 
 
